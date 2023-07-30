@@ -9,6 +9,7 @@ import {
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
 import { Tokens } from './types/tokens.types';
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('auth')
@@ -27,6 +28,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   signIn(@Body() authDto: AuthDto): Promise<Tokens> {
     return this.authService.signIn(authDto);
+  }
+
+  @Post('/logout')
+  @HttpCode(HttpStatus.OK)
+  logout(@GetCurrentUserId() userId: number) {
+    return this.authService.logout(userId);
   }
 
 }

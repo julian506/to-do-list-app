@@ -19,8 +19,8 @@ export class AuthService {
     return await bcrypt.hash(data, salt);
   }
 
-  async updateRefreshToken(userId: number, refresh_token: string) {
-    const hashedRefreshToken = await this.hashData(refresh_token);
+  async updateRefreshToken(userId: number, refreshToken: string) {
+    const hashedRefreshToken = await this.hashData(refreshToken);
 
     return await this.prisma.user.update({
       where: {
@@ -33,7 +33,7 @@ export class AuthService {
   }
 
   async getTokens(userId: number, email: string) {
-    const access_token = await this.jwtService.signAsync(
+    const accessToken = await this.jwtService.signAsync(
       {
         sub: userId,
         email,
@@ -44,7 +44,7 @@ export class AuthService {
       },
     );
 
-    const refresh_token = await this.jwtService.signAsync(
+    const refreshToken = await this.jwtService.signAsync(
       {
         sub: userId,
         email,
@@ -56,8 +56,8 @@ export class AuthService {
     );
 
     return {
-      access_token,
-      refresh_token,
+      accessToken,
+      refreshToken,
     };
   }
 
@@ -72,7 +72,7 @@ export class AuthService {
     });
 
     const tokens = await this.getTokens(newUser.id, newUser.email);
-    await this.updateRefreshToken(newUser.id, tokens.refresh_token);
+    await this.updateRefreshToken(newUser.id, tokens.refreshToken);
     return tokens;
   }
 
@@ -93,7 +93,7 @@ export class AuthService {
     if (!passwordMatches) throw new ForbiddenException('Access Denied');
 
     const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRefreshToken(user.id, tokens.refresh_token);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
   }
 

@@ -9,6 +9,8 @@ import {
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
 import { Tokens } from './types/tokens.types';
+import { RefreshTokenGuard } from 'src/common/guards/refresh-token.guard';
+import { GetCurrentUser } from 'src/common/decorators/get-current-user.decorator';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 
@@ -36,4 +38,14 @@ export class AuthController {
     return this.authService.logout(userId);
   }
 
+  @Public()
+  @UseGuards(RefreshTokenGuard)
+  @Post('/refresh')
+  refreshTokens(
+    @GetCurrentUserId() userId: number,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+  ) {
+    // return refreshToken;
+    return this.authService.refreshTokens(userId, refreshToken);
+  }
 }
